@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Roman Chigvintsev
  */
 public class AirTemperaturePrediction {
-    public static final double ERROR_MARGIN = 1.0;
+    private static final double ERROR_MARGIN = 1.0;
 
     public static void main(String[] args) throws IOException {
         DataLoader dataLoader = new CsvDataLoader();

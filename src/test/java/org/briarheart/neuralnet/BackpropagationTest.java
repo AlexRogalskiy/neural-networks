@@ -87,7 +87,6 @@ class BackpropagationTest {
         double[][] expectedOutput = dataLoader.load(new ClassPathResource("data/inmet_13_14_output.csv"));
 
         DataNormalizer dataNormalizer = new MinMaxEqualizedDataNormalizer();
-
         trainingSet = dataNormalizer.normalize(trainingSet);
         expectedOutput = dataNormalizer.normalize(expectedOutput);
 

@@ -13,11 +13,7 @@ import java.util.List;
  */
 public class InputLayer extends AbstractNeuralLayer {
     public InputLayer(int size) {
-        this(size, true);
-    }
-
-    public InputLayer(int size, boolean withBias) {
-        super(size, createNeurons(size, withBias), null);
+        super(size, createNeurons(size), null);
     }
 
     @Override
@@ -46,14 +42,12 @@ public class InputLayer extends AbstractNeuralLayer {
         getNextLayer().adjustWeights(trainingStrategy);
     }
 
-    private static List<Neuron> createNeurons(int size, boolean withBias) {
+    private static List<Neuron> createNeurons(int size) {
         Preconditions.checkArgument(size > 0, "Input layer size must be greater than zero");
-        int actualSize = withBias ? size + 1 : size;
+        int actualSize = size + 1;
         Neuron[] neurons = new BasicNeuron[actualSize];
         int i = 0, n = 1;
-        if (withBias) {
-            neurons[i++] = new Bias("InputLayer_Bias");
-        }
+        neurons[i++] = new Bias("InputLayer_Bias");
         while (i < actualSize) {
             neurons[i++] = new BasicNeuron("InputNeuron " + n++);
         }

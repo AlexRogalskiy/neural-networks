@@ -6,6 +6,7 @@ import org.briarheart.neuralnet.NeuralLink;
 import org.briarheart.neuralnet.NeuralNetwork;
 import org.briarheart.neuralnet.activation.ActivationFunction;
 import org.briarheart.neuralnet.layer.NeuralLayer;
+import org.briarheart.neuralnet.neuron.Bias;
 import org.briarheart.neuralnet.neuron.Neuron;
 import org.briarheart.neuralnet.util.Arrays;
 import org.slf4j.Logger;
@@ -83,8 +84,11 @@ public class Kohonen implements UnsupervisedTrainingStrategy {
     }
 
     private void feedLayer(NeuralLayer layer, double[] input) {
-        for (int i = 0; i < layer.getNeurons().size(); i++) {
-            layer.getNeurons().get(i).setOutputValue(input[i]);
+        int i = 0;
+        for (Neuron neuron : layer.getNeurons()) {
+            if (!(neuron instanceof Bias)) {
+                neuron.setOutputValue(input[i++]);
+            }
         }
     }
 

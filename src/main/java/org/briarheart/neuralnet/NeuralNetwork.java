@@ -47,7 +47,7 @@ public class NeuralNetwork {
         Preconditions.checkArgument(builder.numberOfInputs > 0, "Number of inputs must be greater than zero");
         Preconditions.checkArgument(builder.numberOfOutputs > 0, "Number of outputs must be greater than zero");
 
-        this.inputLayer = new InputLayer(builder.numberOfInputs, builder.withBias);
+        this.inputLayer = new InputLayer(builder.numberOfInputs);
         NeuralLayer previousLayer = this.inputLayer;
 
         if (builder.numberOfLayers > 1) {
@@ -134,12 +134,9 @@ public class NeuralNetwork {
         protected ActivationFunction defaultActivationFunction;
         protected ActivationFunction outputLayerActivationFunction;
 
-        private final boolean withBias;
-
         private TrainingStrategy trainingStrategy;
 
-        private Builder(boolean withBias, ActivationFunction defaultActivationFunction) {
-            this.withBias = withBias;
+        private Builder(ActivationFunction defaultActivationFunction) {
             this.defaultActivationFunction = defaultActivationFunction;
         }
 
@@ -177,18 +174,17 @@ public class NeuralNetwork {
     }
 
     public static abstract class MultilayerNetworkBuilder extends Builder {
-        private MultilayerNetworkBuilder(boolean withBias) {
-            this(withBias, null);
+        private MultilayerNetworkBuilder() {
+            this(null);
         }
 
-        private MultilayerNetworkBuilder(boolean withBias, ActivationFunction defaultActivationFunction) {
-            this(withBias, defaultActivationFunction, defaultActivationFunction);
+        private MultilayerNetworkBuilder(ActivationFunction defaultActivationFunction) {
+            this(defaultActivationFunction, defaultActivationFunction);
         }
 
-        private MultilayerNetworkBuilder(boolean withBias,
-                                         ActivationFunction defaultActivationFunction,
+        private MultilayerNetworkBuilder(ActivationFunction defaultActivationFunction,
                                          ActivationFunction outputLayerActivationFunction) {
-            super(withBias, defaultActivationFunction);
+            super(defaultActivationFunction);
             this.outputLayerActivationFunction = outputLayerActivationFunction;
         }
 
@@ -239,8 +235,8 @@ public class NeuralNetwork {
     }
 
     public static class PerceptronBuilder extends Builder {
-        public PerceptronBuilder() {
-            super(true, ActivationFunction.HARD_LIMITING_THRESHOLD);
+        private PerceptronBuilder() {
+            super(ActivationFunction.HARD_LIMITING_THRESHOLD);
         }
 
         @Override
@@ -250,8 +246,8 @@ public class NeuralNetwork {
     }
 
     public static class AdalineBuilder extends Builder {
-        public AdalineBuilder() {
-            super(true, ActivationFunction.LINEAR);
+        private AdalineBuilder() {
+            super(ActivationFunction.LINEAR);
         }
 
         @Override
@@ -262,7 +258,7 @@ public class NeuralNetwork {
 
     public static class BackpropagationBuilder extends MultilayerNetworkBuilder {
         private BackpropagationBuilder() {
-            super(true, ActivationFunction.SIGMOID, ActivationFunction.LINEAR);
+            super(ActivationFunction.SIGMOID, ActivationFunction.LINEAR);
         }
 
         @Override
@@ -273,7 +269,7 @@ public class NeuralNetwork {
 
     public static class LevenbergMarquardtBuilder extends MultilayerNetworkBuilder {
         private LevenbergMarquardtBuilder() {
-            super(true, ActivationFunction.SIGMOID, ActivationFunction.LINEAR);
+            super(ActivationFunction.SIGMOID, ActivationFunction.LINEAR);
         }
 
         @Override
@@ -284,7 +280,6 @@ public class NeuralNetwork {
 
     public static class KohonenBuilder extends MultilayerNetworkBuilder {
         private KohonenBuilder() {
-            super(false);
         }
 
         @Override

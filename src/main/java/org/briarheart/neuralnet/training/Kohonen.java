@@ -44,7 +44,7 @@ public class Kohonen implements UnsupervisedTrainingStrategy {
             for (double[] sample : trainingSet) {
                 feedLayer(inputLayer, sample);
                 double[] distances = calculateEuclideanDistances(neuralNetwork);
-                int winnerNeuronIndex = Arrays.indexOfMin(distances);
+                int winnerNeuronIndex = Arrays.findMinimum(distances);
                 log.debug("Epoch #{}: [training_sample={}, winner_neuron_index={}]",
                         epoch + 1, java.util.Arrays.toString(sample), winnerNeuronIndex);
                 NeuralLayer outputLayer = neuralNetwork.getOutputLayer();
@@ -73,7 +73,7 @@ public class Kohonen implements UnsupervisedTrainingStrategy {
 
         feedLayer(inputLayer, input);
         double[] distances = calculateEuclideanDistances(neuralNetwork);
-        int winnerNeuronIndex = Arrays.indexOfMin(distances);
+        int winnerNeuronIndex = Arrays.findMinimum(distances);
         result[winnerNeuronIndex] = 1.0;
 
         return result;

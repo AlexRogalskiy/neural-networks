@@ -43,7 +43,7 @@ public class Arrays {
      * array this method returns index of the first one; if the given array is a zero-length array this method
      * returns -1
      */
-    public static int indexOfMin(double[] a) {
+    public static int findMinimum(double[] a) {
         Preconditions.checkNotNull(a, "Array must not be null");
         if (a.length == 0) {
             return -1;
@@ -55,6 +55,33 @@ public class Arrays {
         for (; i < a.length; i++) {
             double next = a[i];
             if (next < candidate) {
+                candidate = next;
+                result = i;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns index of maximum element in the given array.
+     *
+     * @param a array in which index of maximum element is to be determined (must not be {@code null})
+     * @return index of maximum element in the given array; if there is more than one maximum element in the given
+     * array this method returns index of the first one; if the given array is a zero-length array this method
+     * returns -1
+     */
+    public static int findMaximum(double[] a) {
+        Preconditions.checkNotNull(a, "Array must not be null");
+        if (a.length == 0) {
+            return -1;
+        }
+
+        int result = 0;
+        int i = 0;
+        double candidate = a[i++];
+        for (; i < a.length; i++) {
+            double next = a[i];
+            if (next > candidate) {
                 candidate = next;
                 result = i;
             }

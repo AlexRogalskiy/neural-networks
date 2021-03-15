@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -170,6 +171,51 @@ class BackpropagationTest {
             assertTrue(meanError <= expectedMeanError,
                     "Estimated mean error <" + meanError + "> is greater than expected mean error <"
                             + expectedMeanError + ">");
+        }
+    }
+
+    /**
+     * In this test we have grayscale images of digits. Each image consists of 25 pixels. Each pixel is encoded by
+     * number from 0 (black color) to 1 (white color). The goal of this test is to recognize the digits presented in
+     * the images.
+     */
+    @Test
+    void shouldRecognizeDigits() throws IOException {
+        DataLoader dataLoader = new CsvDataLoader();
+
+        double[][] trainingSet = dataLoader.load(new ClassPathResource("data/ocr_traning_inputs.csv"));
+        double[][] expectedOutput = dataLoader.load(new ClassPathResource("data/ocr_traning_outputs.csv"));
+
+        NeuralNetwork neuralNetwork = NeuralNetwork.backpropagationBuilder()
+                .numberOfInputs(25)
+                .numberOfOutputs(10)
+                .numberOfLayers(2)
+                .hiddenLayerSize(18)
+                .maxEpochs(6000)
+                .learningRate(0.7)
+                .targetError(0.00001)
+                .outputLayerActivationFunction(ActivationFunction.SIGMOID)
+                .build();
+        neuralNetwork.train(trainingSet, expectedOutput);
+
+        double[][] testTrainingSet = dataLoader.load(new ClassPathResource("data/ocr_test_inputs.csv"));
+        double[][] testExpectedOutput = dataLoader.load(new ClassPathResource("data/ocr_test_outputs.csv"));
+
+        double[][] testEstimatedOutput = new double[testTrainingSet.length][];
+        int misses = 0;
+        for (int i = 0; i < testTrainingSet.length; i++) {
+            testEstimatedOutput[i] = neuralNetwork.feed(testTrainingSet[i]);
+            if (Arrays.findMaximum(testEstimatedOutput[i]) != Arrays.findMaximum(testExpectedOutput[i])) {
+                misses++;
+            }
+        }
+
+        double expectedErrorPercentage = 30;
+        if (misses > 0) {
+            double errorPercentage = misses / (testTrainingSet.length / 100.0);
+            String message = "Estimated error percentage <" + errorPercentage + "> is greater than " +
+                    "expected error percentage <" + expectedErrorPercentage + ">";
+            assertFalse(Double.compare(errorPercentage, expectedErrorPercentage) > 0, message);
         }
     }
 

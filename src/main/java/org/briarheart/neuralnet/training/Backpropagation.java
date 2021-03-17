@@ -2,12 +2,13 @@ package org.briarheart.neuralnet.training;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.briarheart.neuralnet.NeuralNetwork;
 import org.briarheart.neuralnet.activation.ActivationFunction;
 import org.briarheart.neuralnet.layer.NeuralLayer;
 import org.briarheart.neuralnet.neuron.Neuron;
+import org.briarheart.neuralnet.util.Arrays;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,10 +29,21 @@ import java.util.Map;
  * @author Roman Chigvintsev
  */
 @Slf4j
-@RequiredArgsConstructor
 public class Backpropagation implements SupervisedTrainingStrategy {
+    private final boolean pickSamplesRandomly;
+
     @Getter
-    private final double learningRate;
+    @Setter
+    private double learningRate;
+
+    public Backpropagation(double learningRate) {
+        this(learningRate, false);
+    }
+
+    public Backpropagation(double learningRate, boolean pickSamplesRandomly) {
+        this.learningRate = learningRate;
+        this.pickSamplesRandomly = pickSamplesRandomly;
+    }
 
     @Override
     public void train(NeuralNetwork neuralNetwork, double[][] trainingSet, double[][] expectedOutput) {
@@ -42,10 +54,18 @@ public class Backpropagation implements SupervisedTrainingStrategy {
         Map<Integer, Double> msePerEpoch = new HashMap<>();
         int epoch = 0;
         double mse = 1.0;
+
+        int[] sampleIndices = new int[trainingSet.length];
+        Arrays.fill(sampleIndices, () -> 0, (i, value) -> i);
+        if (pickSamplesRandomly) {
+            Arrays.shuffle(sampleIndices);
+        }
+
         while (mse > neuralNetwork.getTargetError() && epoch < neuralNetwork.getMaxEpochs()) {
             double errorSum = 0.0;
             for (int i = 0; i < trainingSet.length; i++) {
-                errorSum += train(neuralNetwork, trainingSet, expectedOutput, i);
+                int sampleIndex = sampleIndices[i];
+                errorSum += train(neuralNetwork, trainingSet, expectedOutput, sampleIndex);
             }
 
             mse = errorSum / trainingSet.length;
@@ -102,9 +122,10 @@ public class Backpropagation implements SupervisedTrainingStrategy {
                     sensibility = neuron.getOutputs().stream()
                             .mapToDouble(output -> output.getWeight() * output.getTo().getSensibility())
                             .sum();
-                    sensibility *= activationFunction.getDerivative().apply(neuron.getOutputValue());
+                    sensibility *= activationFunction.getDerivative().applyAsDouble(neuron.getOutputValue());
                 } else {
-                    sensibility = activationFunction.getDerivative().apply(neuron.getOutputValue()) * neuron.getError();
+                    sensibility = activationFunction.getDerivative().applyAsDouble(neuron.getOutputValue())
+                            * neuron.getError();
                 }
                 neuron.setSensibility(sensibility);
             }

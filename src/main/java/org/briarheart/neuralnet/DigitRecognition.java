@@ -21,13 +21,14 @@ public class DigitRecognition {
         double[][] trainingSet = dataLoader.load(new ClassPathResource("data/ocr_traning_inputs.csv"));
         double[][] expectedOutput = dataLoader.load(new ClassPathResource("data/ocr_traning_outputs.csv"));
 
-        NeuralNetwork neuralNetwork = NeuralNetwork.backpropagationBuilder()
+        NeuralNetwork neuralNetwork = NeuralNetwork.onlineBackpropagationBuilder()
                 .numberOfInputs(25)
                 .numberOfOutputs(10)
                 .numberOfLayers(2)
                 .hiddenLayerSize(18)
                 .maxEpochs(6000)
                 .learningRate(0.7)
+                .learningRateReductionPercentage(0.01)
                 .targetError(0.00001)
                 .outputLayerActivationFunction(ActivationFunction.SIGMOID)
                 .build();

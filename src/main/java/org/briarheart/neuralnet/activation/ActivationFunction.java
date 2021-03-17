@@ -1,12 +1,19 @@
 package org.briarheart.neuralnet.activation;
 
-import org.briarheart.neuralnet.util.DoubleToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * @author Roman Chigvintsev
  */
-public interface ActivationFunction extends DoubleToDoubleFunction {
-    DoubleToDoubleFunction getDerivative();
+public interface ActivationFunction extends DoubleUnaryOperator {
+    double apply(double value);
+
+    DoubleUnaryOperator getDerivative();
+
+    @Override
+    default double applyAsDouble(double operand) {
+        return apply(operand);
+    }
 
     ActivationFunction LINEAR = new ActivationFunction() {
         @Override
@@ -15,7 +22,7 @@ public interface ActivationFunction extends DoubleToDoubleFunction {
         }
 
         @Override
-        public DoubleToDoubleFunction getDerivative() {
+        public DoubleUnaryOperator getDerivative() {
             return value -> 1.0;
         }
     };
@@ -27,7 +34,7 @@ public interface ActivationFunction extends DoubleToDoubleFunction {
         }
 
         @Override
-        public DoubleToDoubleFunction getDerivative() {
+        public DoubleUnaryOperator getDerivative() {
             return null;
         }
     };
@@ -40,7 +47,7 @@ public interface ActivationFunction extends DoubleToDoubleFunction {
         }
 
         @Override
-        public DoubleToDoubleFunction getDerivative() {
+        public DoubleUnaryOperator getDerivative() {
             return value -> 1.0 / Math.pow(Math.cosh(value), 2.0);
         }
     };
@@ -52,7 +59,7 @@ public interface ActivationFunction extends DoubleToDoubleFunction {
         }
 
         @Override
-        public DoubleToDoubleFunction getDerivative() {
+        public DoubleUnaryOperator getDerivative() {
             return value -> value * (1.0 - value);
         }
     };

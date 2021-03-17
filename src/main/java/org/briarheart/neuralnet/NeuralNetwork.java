@@ -87,6 +87,10 @@ public class NeuralNetwork {
         return new LevenbergMarquardtBuilder();
     }
 
+    public static NeuralNetwork.OnlineBackpropagationBuilder onlineBackpropagationBuilder() {
+        return new OnlineBackpropagationBuilder();
+    }
+
     public static NeuralNetwork.KohonenBuilder kohonenBuilder() {
         return new KohonenBuilder();
     }
@@ -275,6 +279,71 @@ public class NeuralNetwork {
         @Override
         protected TrainingStrategy getTrainingStrategy(double learningRate) {
             return new LevenbergMarquardt(learningRate);
+        }
+    }
+
+    public static class OnlineBackpropagationBuilder extends MultilayerNetworkBuilder {
+        private double learningRateReductionPercentage = 0.01;
+
+        private OnlineBackpropagationBuilder() {
+            super(ActivationFunction.SIGMOID, ActivationFunction.LINEAR);
+        }
+
+        public OnlineBackpropagationBuilder learningRateReductionPercentage(double learningRateReductionPercentage) {
+            this.learningRateReductionPercentage = learningRateReductionPercentage;
+            return this;
+        }
+
+        @Override
+        public OnlineBackpropagationBuilder numberOfInputs(int numberOfInputs) {
+            return (OnlineBackpropagationBuilder) super.numberOfInputs(numberOfInputs);
+        }
+
+        @Override
+        public OnlineBackpropagationBuilder numberOfOutputs(int numberOfOutputs) {
+            return (OnlineBackpropagationBuilder) super.numberOfOutputs(numberOfOutputs);
+        }
+
+        @Override
+        public OnlineBackpropagationBuilder numberOfLayers(int numberOfLayers) {
+            return (OnlineBackpropagationBuilder) super.numberOfLayers(numberOfLayers);
+        }
+
+        @Override
+        public OnlineBackpropagationBuilder hiddenLayerSize(int size) {
+            return (OnlineBackpropagationBuilder) super.hiddenLayerSize(size);
+        }
+
+        @Override
+        public OnlineBackpropagationBuilder learningRate(double learningRate) {
+            return (OnlineBackpropagationBuilder) super.learningRate(learningRate);
+        }
+
+        @Override
+        public OnlineBackpropagationBuilder maxEpochs(int maxEpochs) {
+            return (OnlineBackpropagationBuilder) super.maxEpochs(maxEpochs);
+        }
+
+        @Override
+        public OnlineBackpropagationBuilder targetError(double targetError) {
+            return (OnlineBackpropagationBuilder) super.targetError(targetError);
+        }
+
+        @Override
+        public OnlineBackpropagationBuilder defaultActivationFunction(ActivationFunction activationFunction) {
+            return (OnlineBackpropagationBuilder) super.defaultActivationFunction(activationFunction);
+        }
+
+        @Override
+        public OnlineBackpropagationBuilder outputLayerActivationFunction(ActivationFunction activationFunction) {
+            return (OnlineBackpropagationBuilder) super.outputLayerActivationFunction(activationFunction);
+        }
+
+        @Override
+        protected TrainingStrategy getTrainingStrategy(double learningRate) {
+            OnlineBackpropagation strategy = new OnlineBackpropagation(learningRate);
+            strategy.setLearningRateReductionPercentage(learningRateReductionPercentage);
+            return strategy;
         }
     }
 

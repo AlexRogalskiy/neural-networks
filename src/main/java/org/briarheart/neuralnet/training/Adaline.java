@@ -23,7 +23,7 @@ public class Adaline extends PerceptronBasedTrainingStrategy {
 
     @Override
     public void adjustWeights(Neuron neuron, ActivationFunction activationFunction) {
-        double weightedSumFactor = activationFunction.getDerivative().apply(neuron.getWeightedSum());
+        double weightedSumFactor = activationFunction.getDerivative().applyAsDouble(neuron.getWeightedSum());
         neuron.getInputs().forEach(input -> {
             double newWeight = input.getWeight() + getLearningRate() * neuron.getError()
                     * input.getFrom().getOutputValue() * weightedSumFactor;
